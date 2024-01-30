@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "fecca6581bb2ad14",
+        "id": "2276a0ae7e36a7cf",
         "type": "tabs",
         "children": [
           {
-            "id": "d157357fd7f95152",
+            "id": "89ff02266626baf0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/posts/my-first-post.md",
+                "file": "content/posts/welcome/index.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "content/posts/my-first-post.md",
+                "file": "content/posts/welcome/index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "content/posts/my-first-post.md",
+                "file": "content/posts/welcome/index.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,15 +125,24 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "content/posts/my-first-post.md"
+                "file": "content/posts/welcome/index.md"
               }
             }
+          },
+          {
+            "id": "e9ce9c665eb89c44",
+            "type": "leaf",
+            "state": {
+              "type": "git-history-view",
+              "state": {}
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 376.5,
     "collapsed": true
   },
   "left-ribbon": {
@@ -146,8 +155,10 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "d157357fd7f95152",
+  "active": "495d52529e966733",
   "lastOpenFiles": [
+    "content/posts/welcome",
+    "content/posts/welcome/index.md",
     "layouts/partials/math.html",
     "layouts/partials",
     "layouts/partiala/math.html",
@@ -169,7 +180,6 @@
     "content/posts/a-tutorial-on-mib/lstm.png",
     "content/posts/a-tutorial-on-mib/elmo.png",
     "content/posts/a-tutorial-on-mib",
-    "content/posts/New folder",
-    "content/posts/my-first-post.md"
+    "content/posts/New folder"
   ]
 }
