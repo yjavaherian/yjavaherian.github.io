@@ -67,16 +67,39 @@ but this property is **reversed** **in test distribution**. Now consider two mod
 - $M_1$ uses both information of background and object shape to determine the label.
 - $M_2$ only relies in object shape.
 both these models are going to perform well in training data but it is obvious that $M_2$ is going to perform better in testing data. what separates $M_2$ from $M_1$?  $M_1$ dependence on $X$ is less than  $M_2$.
+
+### Optimization
 Knowing more about minimal sufficient statistics we can write the IB objective as:
-
 $$
-\text{min } I(X,Z) \textit{ subject to } I(Y,Z) = I(Y,X) 
+\text{min } I(X;Z) \text{ subject to } I(Y;Z) = I(Y;X). 
 $$
-
-
-
-
-
+assuming a parametric family of conditional distributions $P_{\theta}(Z|X)$ the Lagrangian of the above is:
+$$
+\mathcal{L}(\theta,\lambda) = I_{\theta}(Z;X) - \lambda I_{\theta}(Z;Y)
+$$
+where $\lambda$ controls the trade off between sufficiency and minimality.
+There are other ways which we can reformulate the above objective and depending on the scenario, thinking about IB as them can be more useful:
+1. Let's write $I(X,Y;Z)$ as following:
+	$$
+		I(X,Y;Z) = I(X;Z) + I(Y;Z|X) = I(Y;Z) + I(X;Z|Y)
+	$$
+	Thus $I(X;Z) = I(Y;Z) + I(X;Z|Y)$ and putting this in IB Lagrangian objective we get:
+	$$
+		\mathcal{L}(\theta,\lambda) = I_{\theta}(Z;X|Y) + (1 -\lambda) I_{\theta}(Z;Y)
+	$$
+2. Assume $Z$ and $X_{c}$ are both MSS. Now based on the definition of MSS $Z$ must be a function of $X_c$ and vise versa. Hence:
+		$$
+			H(Z|X_{c})= H(X_{c}|Z) = 0 	
+		 $$
+	fixing $X_{c}$ , minimizing $H(X_{c}|Z)$ is equivalent to maximizing $I(Z;X_{c})$.
+	Additionally following proposition 2.1 of [Achille17](https://arxiv.org/abs/1706.01350) $X$ can be written as $f(X_{c},X_{s})$ where $X_{s}\ \bot\ X_{c}$. so for $Z$ to be a function of $X_c$ means that $Z$ cannot depend on $X_s$ and so $I(Z;X_{s}) = 0$. Now we can write another objective for optimizing a parametric representation based on IB:
+	$$
+\text{max } I(X_c;Z) \text{ subject to } I(X_s;Z) = 0. 
+$$and it's Lagrangian is:
+			$$
+			\mathcal{L}(\theta,\lambda) = I_{\theta}(Z;X_{c}) - \lambda I_{\theta}(Z;X_{s})
+			$$
+	we can view $X_{c}$ is the "informative" part of $X$ and $X_s$ as "superﬂuous" part and thus IB tries to increase dependence of $Z$ on $X_c$ and decrease it's dependence on $X_s$.
 
 
 
