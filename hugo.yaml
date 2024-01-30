@@ -2,3 +2,21 @@ baseURL: https://yjavaherian.github.io/
 languageCode: en-us
 title: Riding the Milky Way
 theme: ["PaperMod"]
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        delimiters:
+          block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+          inline:
+          - - \(
+            - \)
+          - - $
+            - $
+        enable: true
+params:
+  math: true
