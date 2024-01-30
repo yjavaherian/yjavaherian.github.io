@@ -4,32 +4,106 @@ draft: "false"
 date: 2024-30-1
 math: true
 ---
+In this tutorial we are going to learn about information bottleneck (IB) and the setting in which it is defined. then I will introduce to you a new setting "Multi-View Unsupervised Learning" and we are going to learn how IB can be extended to this setting. this tutorial is based on [Learning Robust Representations via Multi-View Information Bottleneck](https://arxiv.org/abs/2002.07017). Finally I will share my ideas on other ways to extend IB in multi view setting.
+## Information Bottleneck
+Consider the standard supervised learning setting; we have an input RV $X$ and a target RV $Y$. we are given a dataset of samples from their joint distribution and are tasked to find a model for predicting $Y$ from $X$. What properties of $X$ and $Y$ affect the performance of our model?
+Answer: $I(X;Y)$ is a critical value in this setting. the higher it is the more we are expected to perform and in the limit of $H(Y|X)=0$ there exists a function from $X$ to $Y$ that can predict $Y$ with no error.
+but should $I(X;Y)$ be the only thing to measure the difficulty of task with? Well No. Consider two supervised tasks with identical $I(X;Y)$; in practice we are likely to perform better on the task where the relation between $X$ and $Y$ is simpler. Why? because we can look at the problem as finding a point (true conditional distribution $p_d(y|x)$) in a space of probabilities (probability simplex) and simpler relations require smaller search space and thus we need less data to find these points and we are more confident in our finding (bias variance trade off).
+Okay having established that, How can we measure the simplicity of the relation between $X$ and $Y$?
+Answer: 
+One proxy for this is $H(X)$. because (assuming $Y$ is binary) the effective total number of possible relations between $X$ and $Y$ is $2^{H(X)}$. Now out of this insight comes the following:
+If we can turn the problem of predicting $Y$ from $X$ into the problem of predicting $Y$ from $Z$ such that $H(Z) < H(X)$ while still $I(Y;Z) = I(Y;X)$ we have turned the original problem into a simpler one and thus we are more likely to achieve a better performance. This is "Information Bottleneck" in a nutshell. Now we reformulate this:
+
+> [!Note] Information Bottleneck Setting
+> given two RVs $X$ and $Y$, find a representation for $X$ (called $Z$) such that $Z$ is minimally sufficient for $Y$.
+
+In our formulation we paraphrased the two conditions we enumerated into "minimally sufficient". we now elaborate on this:
+
+> [!Note] Sufficiency
+> consider the following Markov chain $Z \leftarrow X \rightarrow Y$; $Z$ is sufficient for $Y$ if $X \rightarrow Z \rightarrow Y$.
+
+by applying Data Processing Inequality (DPI) on both Markov chains we get:
+$$
+\begin{align*}
+I(X;Y) \geq I(Z;Y)\\
+I(Z;Y) \geq I(X;Y)
+\end{align*}
+$$
+Therefore sufficiency leads to $I(X;Y) = I(Z;Y)$ and thus sufficiency is what we meant by saying a good representation should keep $I(Z;Y) = I(X;Y)$.
+
+> [!TIP] More on Sufficiency
+> Actually $I(Z;Y) = I(X;Y)$ is equivalent to sufficiency; to see this note that $X \rightarrow Z \rightarrow Y$ means $X \bot Y|Z$ and since $Z$ is a representation of $X$ we assume $Z$ is independent of any other random variable conditioned on observing $X$, then we have:
+> $$
+\begin{align*}
+I(Y;Z|X) &= 0 \\
+H(Y|X) - H(Y|Z,X) &= 0 \\
+H(Y|X) - H(Y) - H(Y|Z) + H(Y) + H(Y|Z) - H(Y|Z,X) &= 0 \\
+-I(Y;X) + I(Y;Z) + I(Y;X|Z) &=0\\
+I(Y;X|Z) &= I(Y;X) - I(Y;Z) 
+\end{align*}
+>$$
+>Thus  $X \bot Y|Z \Leftrightarrow  I(Y;X|Z) = 0 \Leftrightarrow I(Y;X) - I(Y;Z)$.
+
+> [!Note] Minimal Sufficiency
+> A sufficient statistic ($Z$) is a minimal sufﬁcient statistic, if it is a function of every other sufﬁcient statistic $Z'$ . or equivalently $X \rightarrow Z' \rightarrow Z \rightarrow Y$ forms a Markov chain.
+
+Again by applying DPI we get:
+$$
+
+I(X;Z) \leq I(X;Z') \quad \forall Z' \text{ being a sufficient statistic}
+$$
+so minimal sufficient statistic is the one having the lowest $I(X;Z)$ among them which is upper bounded by $H(Z)$. and so this is what we actually meant by trying to get $Z$ such that $H(Z) \leq H(X)$.
+
+### A Note on Minimality
+in our discussion so far we have explained the pursuit of minimality based on model complexity and data efficiency. we now give another reasoning based on out of distribution generalization and robustness followed by an example:
+
+the more a representation is independent of $X$ (lower $I(Z;X)$) the more it is robust to changes in $X$ and the more it is likely to generalize beyond train distribution. we provide an intuition for this with an example:
+#### Cats and Dogs 😺🐶
+consider a dog vs cat classification task where we are given an input image $X$ and tasked to predict the label $Y$ which corresponds to whether the input is an image of a dog or a cat. additionally assume that the training data has the following property:
+
+> cats are more likely to be photographed in indoor environments while dogs are more likely to be photographed in outdoor environments.
+
+but this property is **reversed** **in test distribution**. Now consider two models:
+- $M_1$ uses both information of background and object shape to determine the label.
+- $M_2$ only relies in object shape.
+both these models are going to perform well in training data but it is obvious that $M_2$ is going to perform better in testing data. what separates $M_2$ from $M_1$?  $M_1$ dependence on $X$ is less than  $M_2$.
+Knowing more about minimal sufficient statistics we can write the IB objective as:
+
+$$
+\text{min } I(X,Z) \textit{ subject to } I(Y,Z) = I(Y,X) 
+$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Introduction
 Information Bottleneck Principle provides an objective for learning good representations in supervised setting. however a principal assumption in this framework is availability of a target random variable $Y$. In this work authors extend the IB framework to multi-view unsupervised setting.
 
 ### Motivation
 cost of acquiring labeled data is high; this has led to a renewed focus on unsupervised representation learning where the objective is to learn a representation $Z$ that is useful for a wide range of down-stream tasks where no labeled data is available.
 
-### Information bottleneck
-the main idea in IB is to find representations that are minimally sufficient for predicting $Y$.
-the intuition behind minimality is as follows:
-the more a representation is independent of $X$ the more it is robust to changes in $X$ and the more it is likely to generalize beyond train distribution.
-
-#### Example:
-consider a dog vs cat classification task where we are given an input image $X$ and tasked to predict the label $Y$ which corresponds to whether the input is an image of a dog or a cat. additionally assume that the training data has the following property:
-
-cats are more likely to be photographed in indoor environments while dogs are more likely to be photographed in outdoor environments.
-
-but this property is reversed in test distribution. now consider to models:
-model 1 uses both information of background and object shape to determine the label.
-model 2 only relies in object shape.
-both these models are going to perform well in training data but it is obvious that model 2 is going to perform better in testing data. what separates model 2 from model 1? model 1  dependence on $X$ is less than model 2.
-
-this objective can be formulated as follows:
-
-$$
-\textit{min } I(X,Z) \textit{ s.t. } I(Y,Z) = I(Y,X) 
-$$
 
 
 ### Multi View Setting
@@ -49,26 +123,6 @@ I(X,Y;Z) = I(Y;Z) + I(X;Z | Y)
 $$
 where $I(Y;Z)$ is the predictive information of $Z$ and $I(X;Z|Y)$ is the superfluous information of $Z$.
 based on IB a good representation should maximize predictive information (be sufficient statistics) while minimizing superfluous information (minimality).
-### Sufficiency
-We define sufficiency as $I(X;Y|Z) = 0$
-Proposition:
-$$
- I(X;Y|Z)=0 \iff I(X;Y)=I(Y;Z)
-$$
-
-Proof:
-since $Z$ is a representation of $X$ we assume $Z$ is independent of any other random variable conditioned on observing $X$:
-
-$$
-\begin{align*}
-I(Y;Z|X) &= 0 \\
-H(Y|X) - H(Y|Z,X) &= 0 \\
-H(Y|X) - H(Y) - H(Y|Z) + H(Y) + H(Y|Z) - H(Y|Z,X) &= 0 \\
--I(Y;X) + I(Y;Z) + I(Y;X|Z) &=0\\
-I(Y;X|Z) &= I(Y;X) - I(Y;Z) 
-\end{align*}
-$$
-
 
 ## Method
 Definition of redundancy
